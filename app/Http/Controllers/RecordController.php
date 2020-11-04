@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Record;
 use App\Models\PlayerRecord;
+use App\Models\RewardUse;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ class RecordController extends Controller
 
         $query = Record::query();
 
-        $total = $query->count();
+        $total = $query->where('season', env('KILL_SEASON'))->count();
 
         if (is_null($total)) {
             abort(404);
@@ -125,9 +126,21 @@ class RecordController extends Controller
     
             $recordModel->winner = $roleModel->role_type;
             $recordModel->mvp_id = $mvpId;
+            $recordModel->season = env('KILL_SEASON');
     
             $recordModel->save();
-    
+
+            if(isset($body['reward'])){
+                $reward = array_keys($body['reward']);
+
+                foreach($reward as $item){
+                    $rewardUse = new RewardUse();
+                    $rewardUse->player_id = $item;
+                    $rewardUse->role_id = $records[$item];
+                    $rewardUse->save();
+                }
+            }
+
             foreach ($records as $key=>$value) {
                 $playerRecordModel = new PlayerRecord();
                 $playerRecordModel->record_id = $recordModel->id;

@@ -29,7 +29,7 @@ class PlayerController extends Controller
             abort(404);
         }
 
-        $players = $query->forPage($page, $limit)->get();
+        $players = $query->forPage($page, $limit)->with('reward')->get();
 
         if (is_null($players)) {
             abort(404);

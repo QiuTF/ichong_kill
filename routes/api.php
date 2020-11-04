@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/users', 'UserController@login');
 
 // 登录后可以访问的接口
-Route::middleware('auth:api')->group(function(){
+Route::middleware('auth:api')->group(function () {
     // 玩家
     Route::get('/players', 'PlayerController@getPlayers');
     Route::post('/players', 'PlayerController@postPlayers');
@@ -40,4 +40,11 @@ Route::middleware('auth:api')->group(function(){
     // 玩家积分
     Route::get('/rank', 'RankController@getRank');
     Route::get('/rank/detail/{id}', 'RankController@getRankDetail')->where('id', '\d+');
+
+    // 赛季奖励
+    Route::get('/reward', 'RewardController@getReward');
+    Route::post('/reward', 'RewardController@postReward');
+    Route::get('/reward/use', 'RewardController@getRewardUse');
+    Route::delete('/reward/use/{id}', 'RewardController@deleteRewardUse')->where('id', '\d+');
+    Route::get('/player/select', 'RewardController@getPlayerList');
 });
