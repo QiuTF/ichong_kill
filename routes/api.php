@@ -25,6 +25,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/players', 'PlayerController@getPlayers');
     Route::post('/players', 'PlayerController@postPlayers');
     Route::delete('/players/{id}', 'PlayerController@deletePlayers')->where('id', '\d+');
+    Route::put('/players/{id}', 'PlayerController@putPlayers')->where('id', '\d+');
+    Route::get('/playing/players', 'PlayerController@getPlayingPlayers');
 
     // 角色
     Route::get('/roles', 'RoleController@getRoles');

@@ -64,6 +64,7 @@ class PlayerController extends Controller
         }
 
         $player->player = $body['player'];
+        $player->is_playing = 0;
 
         $player->save();
 
@@ -87,6 +88,67 @@ class PlayerController extends Controller
 
         return [
             'data'=>$player
+        ];
+    }
+
+    /**
+     * 修改玩家
+     */
+    public function putPlayers(int $id, Request $request)
+    {
+        $player = Player::query()->find($id);
+
+        $isPlaying = $request->query('is_playing');
+
+        if (is_null($player)) {
+            abort(404);
+        }
+
+        $player->is_playing = $isPlaying == 0 ? 1 : 0;
+
+        $player->save();
+
+        return [
+            'data'=>$player
+        ];
+    }
+
+    /**
+     * 获取游戏中玩家列表
+     */
+    public function getPlayingPlayers(Request $request)
+    {
+        $page = (int)$request->query('page', 1);
+        $limit = (int)$request->query('limit', 1000);
+
+        $query = Player::query();
+
+        $total = $query->count();
+
+        if (is_null($total)) {
+            abort(404);
+        }
+
+        $maxPage = ceil($total/$limit);
+
+        if ($page > $maxPage) {
+            abort(404);
+        }
+
+        $players = $query->forPage($page, $limit)->with('reward')->where('is_playing', 1)->get();
+
+        if (is_null($players)) {
+            abort(404);
+        }
+
+        return [
+            'data'=>$players,
+            'pagination' => [
+                'page'=>$page,
+                'limit'=>$limit,
+                'total_page'=>$maxPage,
+                'total'=>$total
+            ]
         ];
     }
 }

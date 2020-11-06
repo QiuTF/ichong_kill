@@ -41,6 +41,7 @@ class RankController extends Controller
         $detail = PlayerRecord::query()
                               ->with('player')
                               ->where('player_id', $id)
+                              ->where('season',env('KILL_SEASON'))
                               ->orderBy('record_id', 'desc')
                               ->get();
 
