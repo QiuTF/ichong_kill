@@ -22,6 +22,7 @@ class RankController extends Controller
 
         $rank = PlayerRecord::query()
                             ->leftJoin('player', 'record_player.player_id', '=', 'player.id')
+                            ->with('countsnum')
                             ->selectRaw($field)
                             ->where('season',env('KILL_SEASON'))
                             ->groupBy('player_id')

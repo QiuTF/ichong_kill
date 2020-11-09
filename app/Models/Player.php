@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Reward;
+use App\Models\RecordCounts;
 
 class Player extends Model
 {
@@ -19,4 +20,6 @@ class Player extends Model
     {
         return $this->hasOne(Reward::class, 'player_id', 'id');
     }
+
+  
 }

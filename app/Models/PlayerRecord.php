@@ -15,6 +15,11 @@ class PlayerRecord extends Model
         return $this->belongsTo(Player::class, 'player_id', 'id');
     }
 
+    public function countsnum()
+    {
+        return $this->belongsTo(RecordCounts::class, 'player_id', 'player_id');
+    }
+
     public function getCreatedAtAttribute($value)
     {
         return date('Y-m-d H:i:s', strtotime($value));
