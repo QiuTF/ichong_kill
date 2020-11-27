@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class RecordController extends Controller
 {
+
     //
     public function getRecords(Request $request)
     {
@@ -20,19 +21,23 @@ class RecordController extends Controller
 
         $query = Record::query();
 
-        $total = $query->where('season', env('KILL_SEASON'))->count();
+        $total = $query->where('season', env('KILL_SEASON'))
+                       ->count();
 
         if (is_null($total)) {
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $records = $query->with('player')->forPage($page, $limit)->orderByDesc('id')->get();
+        $records = $query->with('player')
+                         ->forPage($page, $limit)
+                         ->orderByDesc('id')
+                         ->get();
 
         if (is_null($records)) {
             abort(404);
@@ -42,22 +47,23 @@ class RecordController extends Controller
             switch ($record->winner) {
                 case 1:
                     $record->winner = '坏人';
-                break;
+                    break;
                 case 2:
                     $record->winner = '好人';
-                break;
-                default:0;
+                    break;
+                default:
+                    0;
             }
         }
 
         return [
-            'data'=>$records,
+            'data' => $records,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 
@@ -75,26 +81,29 @@ class RecordController extends Controller
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $playerRecord = $query->with('player')->forPage($page, $limit)->orderByDesc('id')->get();
+        $playerRecord = $query->with('player')
+                              ->forPage($page, $limit)
+                              ->orderByDesc('id')
+                              ->get();
 
         if (is_null($playerRecord)) {
             abort(404);
         }
 
         return [
-            'data'=>$playerRecord,
+            'data' => $playerRecord,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 
@@ -107,49 +116,86 @@ class RecordController extends Controller
 
         $records = $body['role'];
 
-        $mvp = $body['mvp'];
-
-        if (count($mvp) > 1) {
-            abort(500);
+        if (empty($body['mvp'])) {
+            abort(500, '请选择mvp玩家');
         }
+
+        foreach ($body['mvp'] as $key => $value) {
+            if ($value == false) {
+                unset($body['mvp'][$key]);
+            }
+        }
+
+        if (count($body['mvp']) == 0) {
+            abort(500, '请选择mvp玩家');
+        }
+
+        if (count($body['mvp']) > 1) {
+            abort(500, 'mvp玩家只能是一个');
+        }
+
+        $mvp = $body['mvp'];
 
         $mvpId = array_keys($mvp)[0];
 
         $roleId = $records[$mvpId];
 
         DB::beginTransaction();
-        
+
         try {
-            $roleModel = Role::query()->find($roleId);
+            /**
+             * 记录总表
+             */
+            $roleModel = Role::query()
+                             ->find($roleId);
 
             $recordModel = new Record();
-    
+
             $recordModel->winner = $roleModel->role_type;
             $recordModel->mvp_id = $mvpId;
             $recordModel->season = env('KILL_SEASON');
-    
+
             $recordModel->save();
 
-            if(isset($body['reward'])){
-                $reward = array_keys($body['reward']);
+            /**
+             * 记录总表
+             * ------------------end--------------------
+             */
 
-                foreach($reward as $item){
-                    $rewardUse = new RewardUse();
-                    $rewardUse->player_id = $item;
-                    $rewardUse->role_id = $records[$item];
-                    $rewardUse->save();
+            /**
+             * 身份使用记录
+             */
+            if (isset($body['reward'])) {
+                foreach ($body['reward'] as $key => $value) {
+                    if ($value == true) {
+                        $rewardUse = new RewardUse();
+                        $rewardUse->player_id = $key;
+                        $rewardUse->role_id = $records[$key];
+                        $rewardUse->save();
+                    }
                 }
             }
+            /**
+             * 身份使用记录
+             * ------------------end--------------------
+             */
 
-            foreach ($records as $key=>$value) {
+            /**
+             * 游戏记录表
+             */
+            foreach ($records as $key => $value) {
                 $playerRecordModel = new PlayerRecord();
                 $playerRecordModel->record_id = $recordModel->id;
                 $playerRecordModel->player_id = $key;
-                $playerRecordModel->player_role = Role::query()->where('id', $value)->value('name');
-                $role_type = Role::query()->where('id', $value)->value('role_type');
+                $playerRecordModel->player_role = Role::query()
+                                                      ->where('id', $value)
+                                                      ->value('name');
+                $role_type = Role::query()
+                                 ->where('id', $value)
+                                 ->value('role_type');
                 $playerRecordModel->role_type = $role_type;
                 $playerRecordModel->season = env('KILL_SEASON');
-    
+
                 if ($role_type == $recordModel->winner) {
                     if ($key == $mvpId) {
                         $playerRecordModel->score = 2;
@@ -162,17 +208,22 @@ class RecordController extends Controller
 
                 $playerRecordModel->save();
             }
-    
+            /**
+             * 游戏记录表
+             * ------------------end--------------------
+             */
+
             DB::commit();
+
+            return $recordModel;
         } catch (\Exception $exception) {
             DB::rollBack();
             abort(500, $exception->getMessage());
         }
-        
-       
+
         return [
-            'data'=>$playerRecordModel,
-            'meta'=>'新增对局成功'
+            'data' => $playerRecordModel,
+            'meta' => '新增对局成功',
         ];
     }
 
@@ -187,7 +238,7 @@ class RecordController extends Controller
                               ->get();
 
         return [
-            'data' => $detail
+            'data' => $detail,
         ];
     }
 }

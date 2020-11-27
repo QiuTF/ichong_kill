@@ -7,9 +7,12 @@ use App\Observers\RewardUseObserver;
 use App\Models\RewardUse;
 use App\Observers\RecordPlayerObserver;
 use App\Models\PlayerRecord;
+use App\Observers\PlayerObserver;
+use App\Models\Player;
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Register any application services.
      *
@@ -30,5 +33,6 @@ class AppServiceProvider extends ServiceProvider
         //
         RewardUse::observe(RewardUseObserver::class);
         PlayerRecord::observe(RecordPlayerObserver::class);
+        Player::observe(PlayerObserver::class);
     }
 }

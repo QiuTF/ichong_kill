@@ -7,6 +7,7 @@ use App\Models\PlayerRecord;
 
 class RankController extends Controller
 {
+
     //获取玩家得分排行
     public function getRank()
     {
@@ -24,13 +25,13 @@ class RankController extends Controller
                             ->leftJoin('player', 'record_player.player_id', '=', 'player.id')
                             ->with('countsnum')
                             ->selectRaw($field)
-                            ->where('season',env('KILL_SEASON'))
+                            ->where('season', env('KILL_SEASON'))
                             ->groupBy('player_id')
                             ->orderByRaw($order)
                             ->get();
 
         return [
-            'data' => $rank
+            'data' => $rank,
         ];
     }
 
@@ -42,12 +43,12 @@ class RankController extends Controller
         $detail = PlayerRecord::query()
                               ->with('player')
                               ->where('player_id', $id)
-                              ->where('season',env('KILL_SEASON'))
+                              ->where('season', env('KILL_SEASON'))
                               ->orderBy('record_id', 'desc')
                               ->get();
 
         return [
-            'data' => $detail
+            'data' => $detail,
         ];
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Player;
 
 class PlayerController extends Controller
 {
+
     /**
      * 获取玩家列表
      */
@@ -23,53 +24,28 @@ class PlayerController extends Controller
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $players = $query->forPage($page, $limit)->with('reward')->get();
+        $players = $query->forPage($page, $limit)
+                         ->with('reward')
+                         ->get();
 
         if (is_null($players)) {
             abort(404);
         }
 
         return [
-            'data'=>$players,
+            'data' => $players,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
-        ];
-    }
-
-    /**
-     * 新增编辑玩家
-     */
-    public function postPlayers(Request $request)
-    {
-        $body = $request->post();
-
-        if (!isset($body['id'])) {
-            $player = new Player();
-        } else {
-            $player = Player::query()->find($body['id']);
-
-            if (is_null($player)) {
-                abort(404);
-            }
-        }
-
-        $player->player = $body['player'];
-        $player->is_playing = 0;
-
-        $player->save();
-
-        return [
-            'data'=>$player
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 
@@ -78,7 +54,8 @@ class PlayerController extends Controller
      */
     public function deletePlayers(int $id)
     {
-        $player = Player::query()->find($id);
+        $player = Player::query()
+                        ->find($id);
 
         if (is_null($player)) {
             abort(404);
@@ -87,16 +64,17 @@ class PlayerController extends Controller
         $player->delete();
 
         return [
-            'data'=>$player
+            'data' => $player,
         ];
     }
 
     /**
-     * 修改玩家
+     * 修改玩家状态
      */
     public function putPlayers(int $id, Request $request)
     {
-        $player = Player::query()->find($id);
+        $player = Player::query()
+                        ->find($id);
 
         $isPlaying = $request->query('is_playing');
 
@@ -109,7 +87,7 @@ class PlayerController extends Controller
         $player->save();
 
         return [
-            'data'=>$player
+            'data' => $player,
         ];
     }
 
@@ -129,26 +107,29 @@ class PlayerController extends Controller
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $players = $query->forPage($page, $limit)->with('reward')->where('is_playing', 1)->get();
+        $players = $query->forPage($page, $limit)
+                         ->with('reward')
+                         ->where('is_playing', 1)
+                         ->get();
 
         if (is_null($players)) {
             abort(404);
         }
 
         return [
-            'data'=>$players,
+            'data' => $players,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 }

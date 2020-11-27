@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
-use App\Exceptions\HttpException;
 
-class UserController extends Controller
+class LoginController extends Controller
 {
     // 用户登录
     public function login(Request $request)
@@ -16,7 +15,7 @@ class UserController extends Controller
         $token = Auth::guard('api')->attempt($body);
 
         if (!$token) {
-            throw new HttpException(403,'用户名或密码错误');
+            abort(403,'用户名或密码错误');
         }
 
         return [

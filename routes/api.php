@@ -17,13 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 
 // 用户登录
-Route::post('/users', 'UserController@login');
+Route::post('/login', 'LoginController@login');
 
 // 登录后可以访问的接口
 Route::middleware('auth:api')->group(function () {
     // 玩家
     Route::get('/players', 'PlayerController@getPlayers');
-    Route::post('/players', 'PlayerController@postPlayers');
     Route::delete('/players/{id}', 'PlayerController@deletePlayers')->where('id', '\d+');
     Route::put('/players/{id}', 'PlayerController@putPlayers')->where('id', '\d+');
     Route::get('/playing/players', 'PlayerController@getPlayingPlayers');

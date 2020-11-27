@@ -7,6 +7,7 @@ use App\Models\Role;
 
 class RoleController extends Controller
 {
+
     /**
      * 获取角色列表
      */
@@ -23,38 +24,40 @@ class RoleController extends Controller
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $roles = $query->forPage($page, $limit)->get();
+        $roles = $query->forPage($page, $limit)
+                       ->get();
 
         if (is_null($roles)) {
             abort(404);
         }
 
-        foreach($roles as $role){
-            switch($role->role_type){
+        foreach ($roles as $role) {
+            switch ($role->role_type) {
                 case 1:
                     $role->role_type = '坏人';
-                break;
+                    break;
                 case 2:
                     $role->role_type = '好人';
-                break;
-                default:0;
+                    break;
+                default:
+                    0;
             }
         }
 
         return [
-            'data'=>$roles,
+            'data' => $roles,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 
@@ -68,7 +71,8 @@ class RoleController extends Controller
         if (!isset($body['id'])) {
             $role = new Role();
         } else {
-            $role = Role::query()->find($body['id']);
+            $role = Role::query()
+                        ->find($body['id']);
 
             if (is_null($role)) {
                 abort(404);
@@ -81,7 +85,7 @@ class RoleController extends Controller
         $role->save();
 
         return [
-            'data'=>$role
+            'data' => $role,
         ];
     }
 
@@ -90,7 +94,8 @@ class RoleController extends Controller
      */
     public function deleteRoles(int $id)
     {
-        $role = Role::query()->find($id);
+        $role = Role::query()
+                    ->find($id);
 
         if (is_null($role)) {
             abort(404);
@@ -99,7 +104,7 @@ class RoleController extends Controller
         $role->delete();
 
         return [
-            'data'=>$role
+            'data' => $role,
         ];
     }
 

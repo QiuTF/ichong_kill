@@ -5,11 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Reward;
 use App\Models\RecordCounts;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Player extends Model
+class Player extends Authenticatable
 {
     //
     protected $table = 'player';
+
+    protected $fillable = [
+        'player', 'password', 'avatar', 'introduction'
+    ];
 
     public function getCreatedAtAttribute($value)
     {

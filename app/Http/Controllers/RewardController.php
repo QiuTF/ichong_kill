@@ -9,6 +9,7 @@ use App\Models\Player;
 
 class RewardController extends Controller
 {
+
     //
     public function getReward(Request $request)
     {
@@ -23,26 +24,28 @@ class RewardController extends Controller
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $reward = $query->forPage($page, $limit)->with('player')->get();
+        $reward = $query->forPage($page, $limit)
+                        ->with('player')
+                        ->get();
 
         if (is_null($reward)) {
             abort(404);
         }
 
         return [
-            'data'=>$reward,
+            'data' => $reward,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 
@@ -56,7 +59,8 @@ class RewardController extends Controller
         if (!isset($body['id'])) {
             $reward = new Reward();
         } else {
-            $reward = Reward::query()->find($body['id']);
+            $reward = Reward::query()
+                            ->find($body['id']);
 
             if (is_null($reward)) {
                 abort(404);
@@ -70,7 +74,7 @@ class RewardController extends Controller
         $reward->save();
 
         return [
-            'data'=>$reward
+            'data' => $reward,
         ];
     }
 
@@ -87,35 +91,38 @@ class RewardController extends Controller
             abort(404);
         }
 
-        $maxPage = ceil($total/$limit);
+        $maxPage = ceil($total / $limit);
 
         if ($page > $maxPage) {
             abort(404);
         }
 
-        $rewardUse = $query->forPage($page, $limit)->with(['player','role'])->get();
+        $rewardUse = $query->forPage($page, $limit)
+                           ->with(['player', 'role'])
+                           ->get();
 
         if (is_null($rewardUse)) {
             abort(404);
         }
 
         return [
-            'data'=>$rewardUse,
+            'data' => $rewardUse,
             'pagination' => [
-                'page'=>$page,
-                'limit'=>$limit,
-                'total_page'=>$maxPage,
-                'total'=>$total
-            ]
+                'page' => $page,
+                'limit' => $limit,
+                'total_page' => $maxPage,
+                'total' => $total,
+            ],
         ];
     }
 
     /**
-    * 删除身份使用记录
-    */
+     * 删除身份使用记录
+     */
     public function deleteRewardUse(int $id)
     {
-        $rewardUse = RewardUse::query()->find($id);
+        $rewardUse = RewardUse::query()
+                              ->find($id);
 
         if (is_null($rewardUse)) {
             abort(404);
@@ -124,7 +131,7 @@ class RewardController extends Controller
         $rewardUse->delete();
 
         return [
-            'data'=>$rewardUse
+            'data' => $rewardUse,
         ];
     }
 
@@ -134,8 +141,9 @@ class RewardController extends Controller
 
     public function getPlayerList()
     {
-        $list = Player::query()->get(['id','player']);
+        $list = Player::query()
+                      ->get(['id', 'player']);
 
-        return ['data'=>$list];
+        return ['data' => $list];
     }
 }
