@@ -9,8 +9,10 @@ class PagesController extends Controller
 {
 
     //
-    public function root()
+    public function root(Request $request)
     {
+        $season = $request->query('season',env('KILL_SEASON'));
+
         $field = 'player_id,pk_player.player,sum(score) as score,';
         $field .= 'count(case when score <> 0 then 0 end) wins,'; // 胜场
         $field .= 'count(case when score = 0 then 0 end) fail,'; //负场
@@ -25,7 +27,7 @@ class PagesController extends Controller
                             ->leftJoin('player', 'record_player.player_id', '=', 'player.id')
                             ->with('countsnum')
                             ->selectRaw($field)
-                            ->where('season', env('KILL_SEASON'))
+                            ->where('season', $season)
                             ->groupBy('player_id')
                             ->orderByRaw($order)
                             ->get();

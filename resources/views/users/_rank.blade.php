@@ -10,6 +10,7 @@
             <th>角色类型</th>
             <th>对局得分</th>
             <th>对局结果</th>
+            <th>所属赛季</th>
         </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@
                         错误
                     @endif
                 </td>
+                <td>S{{$item->season}}赛季</td>
             </tr>
         @endforeach
         </tbody>

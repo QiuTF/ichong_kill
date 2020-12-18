@@ -22,7 +22,6 @@ class UsersController extends Controller
         $rank = PlayerRecord::query()
                             ->with('player')
                             ->where('player_id', $user->id)
-                            ->where('season', env('KILL_SEASON'))
                             ->orderBy('record_id', 'desc');
 
         return view('users.show', compact('user', 'rank'));
