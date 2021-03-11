@@ -22,9 +22,9 @@ Route::post('/login', 'LoginController@login');
 // 登录后可以访问的接口
 Route::middleware('auth:api')->group(function () {
     // 玩家
-    Route::get('/players', 'PlayerController@getPlayers');
-    Route::delete('/players/{id}', 'PlayerController@deletePlayers')->where('id', '\d+');
-    Route::put('/players/{id}', 'PlayerController@putPlayers')->where('id', '\d+');
+    Route::get('/players', 'PlayerController@list');
+    Route::delete('/players/{id}', 'PlayerController@delete')->where('id', '\d+');
+    Route::put('/players/{id}', 'PlayerController@update')->where('id', '\d+');
     Route::get('/playing/players', 'PlayerController@getPlayingPlayers');
 
     // 角色

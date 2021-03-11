@@ -11,7 +11,7 @@ class PlayerController extends Controller
     /**
      * 获取玩家列表
      */
-    public function getPlayers(Request $request)
+    public function list(Request $request)
     {
         $page = (int)$request->query('page', 1);
         $limit = (int)$request->query('limit', 1000);
@@ -52,7 +52,7 @@ class PlayerController extends Controller
     /**
      * 删除玩家
      */
-    public function deletePlayers(int $id)
+    public function delete(int $id)
     {
         $player = Player::query()
                         ->find($id);
@@ -71,7 +71,7 @@ class PlayerController extends Controller
     /**
      * 修改玩家状态
      */
-    public function putPlayers(int $id, Request $request)
+    public function update(int $id, Request $request)
     {
         $player = Player::query()
                         ->find($id);
